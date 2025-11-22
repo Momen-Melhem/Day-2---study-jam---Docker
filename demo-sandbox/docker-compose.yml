@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  browser:
+    build: ./sandbox/browser
+    image: browser
+    networks:
+      - sandbox-net
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    depends_on:
+      - logger
+
+  logger:
+    build: ./sandbox/logger
+    image: logger
+    networks:
+      - sandbox-net
+    volumes:
+      - ./logs:/logs
+    command: ["tcpdump", "-i", "any", "-w", "/logs/traffic.pcap"]
+
+networks:
+  sandbox-net:
+    driver: bridge
